@@ -1,0 +1,125 @@
+<template>
+  <!--加一行减一行的组件-->
+  <div class="container-layout">
+      <div v-for="(item, i) in FormArray" :key="i" style="display: flex; align-items: center;margin-top: 10px;">
+          <el-input v-model="FormArray[i].inputValue" @input="handleChange" :style="{'width': slotInputWidthProp}" v-if="inputPtop"></el-input>
+          <el-select v-model="FormArray[i].singleSelectValue" placeholder="请选择" @change="handleChange" :style="{'width': slotSingleWidthProp}" v-if="selectProp">
+              <el-option
+                v-for="item in singleSelectOptionProp"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+          </el-select>
+          <el-cascader v-model="FormArray[i].cascSelectedValue" :options="calcSelectOptionProp" @change="handleChange" v-if="cascProp">
+          </el-cascader>
+          <i  @click="AddForm" class="el-icon-circle-plus-outline" v-if="FormArray.length !== 5"></i>
+          <i class="el-icon-remove-outline"  @click="Delete(item.index)" v-if="i > 0"></i>
+      </div>
+  </div>
+</template>
+<script>
+  export default {
+    name: 'MutiLowComponent',
+    components: {},
+    props: {
+      inputPtop: { // 控制input框的显示变量
+        type: Boolean,
+        default: true
+      },
+      selectProp: { // 控制下拉框显示的变量
+        type: Boolean,
+        default: true
+      },
+      cascProp: { // 控制级联显示的变量
+        type: Boolean,
+        default: true
+      },
+      singleSelectOptionProp: { // 单选框的下拉选项按钮
+        type: Array,
+        default: () => {
+          return [
+            {
+              label: '江西省',
+              value: '0'
+            },
+            {
+              label: '浙江省',
+              value: '1'
+            }
+          ]
+        }
+      },
+      calcSelectOptionProp: { // 级联选项的下拉选项按钮
+        type: Array,
+        default: () => {
+          return [
+            {
+              label: '爷爷',
+              value: '0',
+              children: [
+                {
+                  label: '爸爸',
+                  value: '01'
+                },
+                {
+                  label: '儿子',
+                  value: '011'
+                }
+              ]
+            },
+            {
+              label: '奶奶',
+              value: '1',
+              children: [
+                {
+                  label: '妈妈',
+                  value: '11'
+                },
+                {
+                  label: '我',
+                  value: '012'
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    data () {
+      return {
+        FormArray: [ // 展示内容
+          {
+            index: 0,
+            inputValue: '',
+            singleSelectValue: '',
+            cascSelectedValue: []
+          }
+        ]
+      }
+    },
+    mounted () {
+    },
+    methods: {
+      AddForm () { // 增加一行
+        this.FormArray.push({
+          index: this.FormArray.length,
+          value: ''
+        })
+        console.log(this.FormArray)
+      },
+      Delete (index) { // 减少一行
+        this.FormArray.splice(index, 1)
+        for (let i in this.FormArray) {
+          this.FormArray[i].index = i
+        }
+        this.$emit('handle-change', this.FormArray)
+      },
+      handleChange () { // 处理提交函数
+        this.$emit('handle-change', this.FormArray)
+      }
+    }
+  }
+</script>
+<style>
+</style>
